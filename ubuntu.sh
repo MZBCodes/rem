@@ -8,7 +8,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 REMOTE=1
-ADMIN_PASSWORD="8$DistributedSinger"
+ADMIN_PASSWORD="0-GrantVoting"
 
 run_scripts() {
     local password="$1"
@@ -18,10 +18,8 @@ run_scripts() {
 
     echo "$password $user $ip $script_name"
 
-    # Copy the script to the remote machine
     sshpass -p "$password" scp "$script_name" "$user@$ip:/tmp/"
 
-    # Execute the script remotely using sudo
     sshpass -p "$password" ssh -o StrictHostKeyChecking=no "$user@$ip" "echo '$password' | sudo -S bash /tmp/$script_name"
 }
 
@@ -38,27 +36,22 @@ change_root_password() {
 
 add_admin_users() {
     ADMIN1="dawg"
-    ADMIN2="bak"
-    echo "[+] Adding in new and backup admin"
+    PASS1="0-EngageSafety"
+    echo "[+] Adding in backup admin"
     #adding in admin users
     useradd "$ADMIN1"
-    useradd "$ADMIN2"
     
     echo "[+] Updating password on accounts"
+
     #unlocks account by giving them password
     echo "$ADMIN1:$PASS1" | chpasswd
-    echo "$ADMIN2:$PASS2" | chpasswd
     
     echo "[+] Add new admins to the sudo group"
     #giving admin privs to new users
     if [[ -n "$WHEEL_OS" ]]; then
 	usermod -aG wheel "$ADMIN1"
-	usermod -aG wheel "$ADMIN2"
-	
     else
 	usermod -aG sudo "$ADMIN1"
-	usermod -aG sudo "$ADMIN2"
-	
     fi
 }
 
@@ -122,15 +115,20 @@ setup_coordinate() {
 }
 
 deploy_scripts() { # talk with shane
-    cp /root/Linux/Scripts/base_harden.sh /root/base_harden.sh
+    cp -r /root/Linux/Scripts/* /root/
     echo "[+] Deploying hardening scripts to all linux machines"
     
-    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.4" "base_harden.sh"
     run_scripts "Ch@ng3_m3" "dawg" "10.3.1.5" "base_harden.sh"
     run_scripts "Ch@ng3_m3" "dawg" "10.3.1.11" "base_harden.sh"
 
     run_scripts "Ch@ng3_m3" "dawg" "192.168.3.4" "base_harden.sh"
     run_scripts "Ch@ng3_m3" "dawg" "192.168.3.3" "base_harden.sh"
+
+    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.5" "proxmox.sh"
+    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.11" "ftp.sh"
+
+    run_scripts "Ch@ng3_m3" "dawg" "192.168.3.4" "http.sh"
+    run_scripts "Ch@ng3_m3" "dawg" "192.168.3.3" "sql.sh"
 }
 
 get_scripts
