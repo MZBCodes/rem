@@ -122,14 +122,15 @@ setup_coordinate() {
 }
 
 deploy_scripts() { # talk with shane
+    cp /root/Linux/Scripts/base_harden.sh /root/base_harden.sh
     echo "[+] Deploying hardening scripts to all linux machines"
     
-    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.4" "/root/Linux/Scripts/base_harden.sh"
-    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.5" "/root/Linux/Scripts/base_harden.sh"
-    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.100" "/root/Linux/Scripts/base_harden.sh"
+    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.4" "base_harden.sh"
+    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.5" "base_harden.sh"
+    run_scripts "Ch@ng3_m3" "dawg" "10.3.1.11" "base_harden.sh"
 
-    run_scripts "Ch@ng3_m3" "dawg" "192.168.3.2" "/root/Linux/Scripts/base_harden.sh"
-    run_scripts "Ch@ng3_m3" "dawg" "192.168.3.3" "/root/Linux/Scripts/base_harden.sh"
+    run_scripts "Ch@ng3_m3" "dawg" "192.168.3.4" "base_harden.sh"
+    run_scripts "Ch@ng3_m3" "dawg" "192.168.3.3" "base_harden.sh"
 }
 
 get_scripts
