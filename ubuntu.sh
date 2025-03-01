@@ -55,6 +55,20 @@ add_admin_users() {
     fi
 }
 
+remove_admin_users() {
+    users=$(grep '^sudo:' /etc/group | tr ":" " " | cut -d' ' -f4- | tr "," " ")
+    echo "Current admin users: $users"
+
+    echo "[+] Removing old admin users"
+    for user in $users; do
+        if [[ "$user" == "whiteteam" || "$user" == "blackteam" ]]; then
+            continue
+        fi
+        gpasswd -d "$user" sudo
+    done
+    echo $(grep sudo /etc/group | tr ":" " " | cut -d' ' -f4-)
+
+}
 
 get_scripts() {
     mkdir /root/Linux
@@ -71,7 +85,7 @@ setup_ansible() {
     echo "[+] Installing dependencies..."
     apt install ansible
 
-    ansible-galaxy collections install pfsensible.core    
+    ansible-galaxy collection install pfsensible.core    
 }
 
 
@@ -131,6 +145,14 @@ deploy_scripts() { # talk with shane
     run_scripts "Ch@ng3_m3" "dawg" "192.168.3.3" "sql.sh"
 }
 
+setup_sshpass() {
+	apt install -y sshpass
+}
+
+change_root_password
+remove_admin_users
+add_admin_users
+setup_sshpass
 get_scripts
 run_hardening_script
 setup_coordinate
